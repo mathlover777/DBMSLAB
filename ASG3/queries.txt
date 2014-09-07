@@ -1,0 +1,6 @@
+FOR HIRED:
+SELECT * FROM `Journey`,`Src`,`Dst`,`Places` as `Dest`,`Places` as `Source`, `RideHired`,`Hired`,`HiredVehicle`,`Vehicle`
+WHERE `Journey`.`ID` = `Src`.`JourneyID` AND `Journey`.`ID` = `Dst`.`JourneyID` AND `Src`.`PlacesID` = `Source`.`ID` AND `Dst`.`PlacesID` = `Dest`.`ID` AND `Dest`.`Name` LIKE 'Mumbai' AND `Source`.`Name` = 'Kolkata' AND `Journey`.`ID` = `RideHired`.`JourneyID` AND `RideHired`.`HiredID` = `Hired`.`ID` AND `Hired`.`ID` = `HiredVehicle`.`HiredID` AND `HiredVehicle`.`VehicleModel` = `Vehicle`.`Model` ORDER BY `Vehicle`.`Model`
+FOR OWNED:
+SELECT * FROM `Journey`,`Src`,`Dst`,`Places` as `Dest`,`Places` as `Source`, `RideOwned`,`Owned`,`OwnedVehicle`,`Vehicle`
+WHERE `Journey`.`ID` = `Src`.`JourneyID` AND `Journey`.`ID` = `Dst`.`JourneyID` AND `Src`.`PlacesID` = `Source`.`ID` AND `Dst`.`PlacesID` = `Dest`.`ID` AND `Dest`.`Name` LIKE 'Mumbai' AND `Source`.`Name` = 'Kolkata' AND `Journey`.`ID` = `RideOwned`.`JourneyID` AND `RideOwned`.`OwnedID` = `Owned`.`ID` AND `Owned`.`ID` = `OwnedVehicle`.`OwnedID` AND `OwnedVehicle`.`VehicleModel` = `Vehicle`.`Model` ORDER BY `Vehicle`.`Model`

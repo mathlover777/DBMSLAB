@@ -1,0 +1,261 @@
+Chemical Table : **********************************
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Chemical`
+--
+
+CREATE TABLE IF NOT EXISTS `Chemical` (
+  `ChemicalNo` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(200) NOT NULL,
+  PRIMARY KEY (`ChemicalNo`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+--
+-- Dumping data for table `Chemical`
+--
+
+INSERT INTO `Chemical` (`ChemicalNo`, `Name`) VALUES
+(1, 'Chlorine'),
+(2, 'A'),
+(3, 'B'),
+(4, 'C'),
+(5, 'D');
+
+Condition Table :*************************************
+--
+-- Table structure for table `Condition`
+--
+
+CREATE TABLE IF NOT EXISTS `Condition` (
+  `ConditionNo` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(500) NOT NULL,
+  PRIMARY KEY (`ConditionNo`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Dumping data for table `Condition`
+--
+
+INSERT INTO `Condition` (`ConditionNo`, `Name`) VALUES
+(1, 'Sunlight'),
+(2, 'Catalyst'),
+(3, 'High Temparature'),
+(4, 'Low Temparature');
+
+Product Table: *********************************************
+
+--
+-- Table structure for table `Product`
+--
+
+CREATE TABLE IF NOT EXISTS `Product` (
+  `ReactionNo` int(11) NOT NULL,
+  `ChemicalNo` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `Product`
+--
+
+INSERT INTO `Product` (`ReactionNo`, `ChemicalNo`) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(2, 2),
+(2, 4),
+(3, 1),
+(3, 5),
+(3, 4),
+(4, 4),
+(4, 5),
+(5, 1),
+(5, 5),
+(5, 3);
+
+Reactant Table :**********************************************
+--
+-- Table structure for table `Reactant`
+--
+
+CREATE TABLE IF NOT EXISTS `Reactant` (
+  `ReactionNo` int(11) NOT NULL,
+  `ChemicalNo` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `Reactant`
+--
+
+INSERT INTO `Reactant` (`ReactionNo`, `ChemicalNo`) VALUES
+(1, 4),
+(1, 5),
+(2, 1),
+(2, 3),
+(3, 2),
+(3, 3),
+(4, 2),
+(4, 1),
+(5, 4);
+
+Reaction Table :****************************************************
+--
+-- Table structure for table `Reaction`
+--
+
+CREATE TABLE IF NOT EXISTS `Reaction` (
+  `ReactionNo` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(300) NOT NULL,
+  PRIMARY KEY (`ReactionNo`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+--
+-- Dumping data for table `Reaction`
+--
+
+INSERT INTO `Reaction` (`ReactionNo`, `Name`) VALUES
+(1, 'R1'),
+(2, 'R2'),
+(3, 'R3'),
+(4, 'R4'),
+(5, 'R5');
+
+ReactionCondition : ***************************************************
+
+--
+-- Table structure for table `ReactionCondition`
+--
+
+CREATE TABLE IF NOT EXISTS `ReactionCondition` (
+  `ReactionNo` int(11) NOT NULL,
+  `ConditionNo` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ReactionCondition`
+--
+
+INSERT INTO `ReactionCondition` (`ReactionNo`, `ConditionNo`) VALUES
+(1, 1),
+(1, 4),
+(2, 3),
+(2, 2),
+(3, 2),
+(4, 4),
+(4, 1),
+(4, 2),
+(5, 2),
+(5, 3);
+
+
+____________________________________________________________________________
+
+
+
+
+
+Q1: 
+/********************************************************************/
+SELECT `Name`
+FROM `Chemical`
+WHERE `ChemicalNo`
+IN (
+
+	SELECT `ChemicalNo`
+	FROM `Reactant`
+	WHERE `ReactionNo`
+	IN (
+
+		SELECT `ReactionNo`
+		FROM `Reactant`
+		WHERE `ChemicalNo`
+		IN (
+
+			SELECT `ChemicalNo`
+			FROM `Chemical`
+			WHERE `Name` LIKE 'Chlorine'
+		)
+	)
+	AND `ChemicalNo` NOT
+	IN (
+
+		SELECT `ChemicalNo`
+		FROM `Chemical`
+		WHERE `Name` LIKE 'Chlorine'
+	)
+)
+/******************************************************************/
+
+Q2:
+/******************************************************************/
+SELECT `Name`
+FROM `Reaction`
+WHERE `ReactionNo`
+IN (
+
+	SELECT `ReactionNo`
+	FROM `ReactionCondition`
+	WHERE `ConditionNo`
+	IN (
+
+		SELECT `ConditionNo`
+		FROM `Condition`
+		WHERE `Name` = 'Catalyst'
+	)
+)
+/******************************************************************/
+
+
+
+Q3:
+/******************************************************************/
+SELECT `Name`
+FROM `Chemical`
+WHERE `ChemicalNo`
+IN (
+
+	SELECT `ChemicalNo`
+	FROM (
+
+		SELECT `ChemicalNo` , COUNT( `ChemicalNo` ) AS ct
+		FROM `Reactant`
+		GROUP BY `ChemicalNo`
+		ORDER BY ct DESC
+		)y
+	WHERE ct = (
+		SELECT MAX( ct )
+		FROM (
+
+			SELECT `ChemicalNo` , COUNT( `ChemicalNo` ) AS ct
+			FROM `Reactant`
+			GROUP BY `ChemicalNo`
+			ORDER BY ct DESC 
+			) x
+	)
+)
+/******************************************************************/
+
+Q4:
+/******************************************************************/
+SELECT `Name`
+FROM `Chemical`
+WHERE `ChemicalNo`
+IN (
+
+	SELECT `ChemicalNo`
+	FROM `Product`
+	WHERE `ReactionNo`
+	IN (
+
+		SELECT `ReactionNo`
+		FROM `Reactant`
+		WHERE `ChemicalNo`
+		IN (
+
+			SELECT `ChemicalNo`
+			FROM `Chemical`
+			WHERE `Name` LIKE 'Chlorine'
+		)
+	)
+)
+/******************************************************************/
